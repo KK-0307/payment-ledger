@@ -1,0 +1,39 @@
+{
+  "name": "10-stripe-test-mode",
+  "description": "Real Stripe test mode behind the fault proxy (requires STRIPE_SECRET_KEY=sk_test_...). 300 rows, open loop at 5 tx/s to stay well under test-mode rate limits; 5% of responses are dropped after Stripe has executed the request.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 300,
+  "merchants": 10,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.05,
+  "load": {
+    "mode": "open",
+    "concurrency": 32,
+    "target_rate": 5
+  },
+  "client": {
+    "timeout_ms": 30000,
+    "max_attempts": 12,
+    "backoff_base_ms": 200,
+    "backoff_max_ms": 5000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on",
+    "env": {
+      "PROCESSOR_TIMEOUT": "8s",
+      "LEASE": "30s",
+      "REQUEST_BUDGET": "25s"
+    }
+  },
+  "processor": {
+    "kind": "stripe",
+    "faults": {
+      "drop_after_prob": 0.05
+    }
+  },
+  "drain_timeout_s": 300
+}

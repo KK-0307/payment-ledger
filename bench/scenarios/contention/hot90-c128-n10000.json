@@ -1,0 +1,31 @@
+{
+  "name": "hot90-c128-n10000",
+  "description": "Contention matrix, closed loop: 90% of operations to one merchant, the rest Zipf(1.1) over the others; 128 workers; 10000 operations. No injected faults.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 10000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 128
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim"
+  },
+  "drain_timeout_s": 120,
+  "hot_merchant_fraction": 0.9
+}

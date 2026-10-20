@@ -1,0 +1,31 @@
+{
+  "name": "06-cached-processor-500s",
+  "description": "2% of processor executions fail *after* charging and the 500 is stored under the idempotency key (Stripe's documented behaviour), so re-sending never succeeds: recovery must look the PaymentIntent up via search.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim",
+    "internal_error_prob": 0.02
+  },
+  "drain_timeout_s": 120
+}

@@ -1,0 +1,30 @@
+{
+  "name": "01-baseline",
+  "description": "No injected faults or latency. Closed loop, 32 workers: the capacity ceiling of one API instance on this machine.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim"
+  },
+  "drain_timeout_s": 120
+}

@@ -1,0 +1,20 @@
+# Extends gitleaks' default rules. The benchmark result files under bench/
+# record SHA-256 digests of binaries, scenarios and datasets
+# ("api_bin_sha256": "8c47…"); the generic-api-key rule mistakes them for keys.
+# The allowlist matches only whole lines of that exact shape, so a real secret
+# in any other place (or any other field) is still reported.
+title = "payment-ledger gitleaks config"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "SHA-256 digests recorded in benchmark result and manifest files"
+regexTarget = "line"
+regexes = ['''"[a-z_]*sha256"\s*:\s*"[0-9a-f]{64}"''']
+
+[[allowlists]]
+description = "benchmark arm specifications in documentation (label:path/to/api-binary[:ENV=VALUE])"
+regexTarget = "line"
+paths = ['''^docs/BENCHMARKS\.md$''']
+regexes = ['''(single-row|sharding-off|sharding-on):\S*api\b''']

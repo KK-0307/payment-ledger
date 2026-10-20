@@ -1,0 +1,67 @@
+{
+  "name": "09-chaos",
+  "description": "Everything at once: two instances with rotating SIGKILLs, processor errors before and after charging, cached 500s, webhooks with 10% never delivered, database resets and a blackout, and a flaky outbox receiver (5% HTTP 500).",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.05,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 2,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim",
+    "webhooks": true,
+    "webhook_delay_ms": 200,
+    "webhook_drop_prob": 0.1,
+    "internal_error_prob": 0.005,
+    "faults": {
+      "latency_median_ms": 30,
+      "latency_sigma": 0.5,
+      "error_before_prob": 0.02,
+      "rate_limit_prob": 0.01,
+      "reset_before_prob": 0.005,
+      "drop_after_prob": 0.02,
+      "hang_ms": 2500,
+      "error_after_prob": 0.005
+    }
+  },
+  "drain_timeout_s": 120,
+  "db": {
+    "faults": {
+      "latency_ms": 0.5,
+      "reset_rate_per_sec": 0.1
+    }
+  },
+  "outbox_sink": {
+    "error_prob": 0.05
+  },
+  "events": [
+    {
+      "at_s": 4,
+      "every_s": 7,
+      "type": "api_crash",
+      "duration_s": 1,
+      "instance": -1
+    },
+    {
+      "at_s": 10,
+      "type": "db_blackout",
+      "duration_s": 2
+    }
+  ]
+}

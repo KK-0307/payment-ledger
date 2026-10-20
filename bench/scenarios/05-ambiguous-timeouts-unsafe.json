@@ -1,0 +1,35 @@
+{
+  "name": "05-ambiguous-timeouts-unsafe",
+  "description": "Ablation: identical faults and seed to 04, but IDEMPOTENCY_MODE=unsafe-off (no Idempotency-Key handling, no processor idempotency key, unknown outcome treated as failure, no recovery worker). Shows what the safety mechanisms prevent.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "unsafe-off"
+  },
+  "processor": {
+    "kind": "sim",
+    "faults": {
+      "drop_after_prob": 0.03,
+      "hang_ms": 2500,
+      "error_after_prob": 0.01
+    }
+  },
+  "drain_timeout_s": 120
+}

@@ -1,0 +1,153 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Ordinary CI never talks to Stripe: tests use the in-process simulator
+  # (internal/stripesim) and fixtures. No Stripe credential is configured here.
+  GOFLAGS: -mod=readonly
+  # A database user and name for the throwaway PostgreSQL service container.
+  # These are not secrets: the container exists only for the job.
+  PGUSER: postgres
+  PGPASSWORD: postgres
+
+jobs:
+  static:
+    name: Build, vet, format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+      - name: Build
+        run: go build ./...
+      - name: go vet
+        run: go vet ./...
+      - name: gofmt
+        run: |
+          unformatted="$(gofmt -l .)"
+          if [ -n "$unformatted" ]; then
+            echo "These files are not gofmt-formatted:" >&2
+            echo "$unformatted" >&2
+            exit 1
+          fi
+      - name: Documentation links, images and diagrams
+        run: python3 scripts/check-docs.py
+      - name: go mod tidy is a no-op
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+
+  unit:
+    name: Unit tests (no database)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+      # Tests that need PostgreSQL skip themselves when TEST_DATABASE_URL is
+      # unset; the integration job below runs them for real.
+      - name: go test ./...
+        run: go test -count=1 ./...
+
+  integration:
+    name: Integration tests (PostgreSQL 16)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+
+      # Full suite against a real database. The groups below re-run the
+      # tests behind each guarantee by name and fail if any of them is
+      # missing, skipped or failing (scripts/ci-test-group.sh), so a rename
+      # cannot silently turn a group green.
+      - name: All tests with PostgreSQL
+        run: go test -count=1 -p 2 ./...
+
+      - name: Ledger accounting invariants
+        run: |
+          scripts/ci-test-group.sh "ledger invariants" "./internal/ledger ./internal/audit ./internal/payments" \
+            TestValidate TestPostAndIdempotency TestDatabaseEnforcesInvariants TestConcurrentPosting \
+            TestShardedAccountBalanceAndPostings TestShardsDoNotBlockEachOther TestShardedAudit TestMerchantPayableShardsAudit \
+            TestHappyPathAndLedger TestRefunds TestHotAccountsAreSharded TestSingleShardKeepsLegacyAccountCodes \
+            TestHotMerchantPayableIsSharded TestColdMerchantPayableStaysOneRow
+
+      - name: Idempotency and concurrent payments
+        run: |
+          scripts/ci-test-group.sh "idempotency and concurrency" "./internal/ledger ./internal/payments" \
+            TestIdempotentReplayAndMismatch TestConcurrentSameKey TestHotMerchantConcurrentCaptures \
+            TestConcurrentPosting TestUnsafeModeDoubleCharges
+
+      - name: Webhook signatures and duplicate delivery
+        run: |
+          scripts/ci-test-group.sh "webhooks" "./internal/stripe ./internal/payments" \
+            TestVerifySignature TestCheckKey TestWebhookResolves TestWebhookDuplicateDelivery
+
+      - name: Crash recovery and reconciliation
+        run: |
+          scripts/ci-test-group.sh "recovery" "./internal/payments" \
+            TestAmbiguousTimeoutThenRetry TestRecoveryWorkerResolves TestCachedProcessorErrorUsesLookup \
+            TestDeadHolderTakeoverInsideOneRequest TestHeartbeatKeepsSlowHolder TestInflightWaitIsBounded
+
+  race:
+    name: Race detector (PostgreSQL 16)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+      # -race multiplies CPU and memory use. Two packages and two parallel
+      # tests at a time keep it inside a standard runner (4 vCPU, 16 GB) and
+      # keep PostgreSQL connections (32 per test database) under its default
+      # max_connections of 100.
+      - name: go test -race
+        run: go test -race -count=1 -p 2 -parallel 2 -timeout 20m ./...

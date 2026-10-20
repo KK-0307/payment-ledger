@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 460" font-family="system-ui, sans-serif" font-size="12" role="img" aria-label="Concurrent duplicate requests: p99 latency before and after the lock-order fix (lower is better)">
+<title>Concurrent duplicate requests: p99 latency before and after the lock-order fix (lower is better)</title>
+<rect width="960" height="460" fill="#ffffff"/>
+<text x="70" y="22" font-size="15" font-weight="600" fill="#111827">Concurrent duplicate requests: p99 latency before and after the lock-order fix (lower is better)</text>
+<text x="70" y="38" font-size="11" fill="#4b5563">Closed loop, 32 workers, 20,000 operations; 20% of operations are sent twice at once with the same Idempotency-Key. Sharding on in both arms.</text>
+<text x="70" y="53" font-size="11" fill="#4b5563">Median of 5 interleaved rounds (whiskers: min-max). Apple M4 Max laptop, PostgreSQL 16; every component shares the host.</text>
+<rect x="70" y="63" width="10" height="10" fill="#6b7280"/><text x="84" y="72" fill="#374151">before fix</text>
+<rect x="164" y="63" width="10" height="10" fill="#2563eb"/><text x="178" y="72" fill="#374151">after fix</text>
+<line x1="70" x2="940" y1="330.0" y2="330.0" stroke="#e5e7eb"/><text x="64" y="334.0" text-anchor="end" fill="#6b7280">0</text>
+<line x1="70" x2="940" y1="281.2" y2="281.2" stroke="#e5e7eb"/><text x="64" y="285.2" text-anchor="end" fill="#6b7280">400</text>
+<line x1="70" x2="940" y1="232.4" y2="232.4" stroke="#e5e7eb"/><text x="64" y="236.4" text-anchor="end" fill="#6b7280">800</text>
+<line x1="70" x2="940" y1="183.6" y2="183.6" stroke="#e5e7eb"/><text x="64" y="187.6" text-anchor="end" fill="#6b7280">1200</text>
+<line x1="70" x2="940" y1="134.8" y2="134.8" stroke="#e5e7eb"/><text x="64" y="138.8" text-anchor="end" fill="#6b7280">1600</text>
+<line x1="70" x2="940" y1="86.0" y2="86.0" stroke="#e5e7eb"/><text x="64" y="90.0" text-anchor="end" fill="#6b7280">2000</text>
+<text transform="translate(16,208) rotate(-90)" text-anchor="middle" fill="#374151">succeeded-payment p99 latency (ms)</text>
+<rect x="231.5" y="207.4" width="54.0" height="122.6" fill="#6b7280"><title>before fix, duplicates-zipf: median 1004.7 (min 1004.3, max 1005.2)</title></rect>
+<line x1="258.5" x2="258.5" y1="207.5" y2="207.4" stroke="#111827" stroke-width="1"/><text x="258.5" y="202.4" text-anchor="middle" font-size="11" font-weight="600" fill="#111827">1,005</text><line x1="255.5" x2="261.5" y1="207.5" y2="207.5" stroke="#111827"/><line x1="255.5" x2="261.5" y1="207.4" y2="207.4" stroke="#111827"/>
+<rect x="287.5" y="317.1" width="54.0" height="12.9" fill="#2563eb"><title>after fix, duplicates-zipf: median 105.5 (min 105.1, max 106.6)</title></rect>
+<line x1="314.5" x2="314.5" y1="317.2" y2="317.0" stroke="#111827" stroke-width="1"/><text x="314.5" y="312.0" text-anchor="middle" font-size="11" font-weight="600" fill="#111827">105</text><line x1="311.5" x2="317.5" y1="317.2" y2="317.2" stroke="#111827"/><line x1="311.5" x2="317.5" y1="317.0" y2="317.0" stroke="#111827"/>
+<text transform="translate(291.5,344.0) rotate(-40)" text-anchor="end" fill="#374151">Zipf merchant mix</text>
+<rect x="666.5" y="207.4" width="54.0" height="122.6" fill="#6b7280"><title>before fix, duplicates-hot90: median 1004.9 (min 1003.5, max 1007.5)</title></rect>
+<line x1="693.5" x2="693.5" y1="207.6" y2="207.1" stroke="#111827" stroke-width="1"/><text x="693.5" y="202.1" text-anchor="middle" font-size="11" font-weight="600" fill="#111827">1,005</text><line x1="690.5" x2="696.5" y1="207.6" y2="207.6" stroke="#111827"/><line x1="690.5" x2="696.5" y1="207.1" y2="207.1" stroke="#111827"/>
+<rect x="722.5" y="317.3" width="54.0" height="12.7" fill="#2563eb"><title>after fix, duplicates-hot90: median 104.2 (min 103.5, max 111.4)</title></rect>
+<line x1="749.5" x2="749.5" y1="317.4" y2="316.4" stroke="#111827" stroke-width="1"/><text x="749.5" y="311.4" text-anchor="middle" font-size="11" font-weight="600" fill="#111827">104</text><line x1="746.5" x2="752.5" y1="317.4" y2="317.4" stroke="#111827"/><line x1="746.5" x2="752.5" y1="316.4" y2="316.4" stroke="#111827"/>
+<text transform="translate(726.5,344.0) rotate(-40)" text-anchor="end" fill="#374151">90% of operations to one merchant</text>
+<line x1="70" x2="940" y1="330.0" y2="330.0" stroke="#9ca3af"/>
+<text x="70" y="454" fill="#6b7280" font-size="11">Bars: median of the runs. Whiskers: min–max.</text>
+</svg>

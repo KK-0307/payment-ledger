@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 449" font-family="system-ui, sans-serif" font-size="12" role="img" aria-label="Accounting correctness outcomes across the recorded benchmark runs">
+<title>Accounting correctness outcomes across the recorded benchmark runs</title><rect width="960" height="449" fill="#ffffff"/>
+<text x="20" y="22" font-size="15" font-weight="600" fill="#111827">Accounting correctness outcomes across the recorded benchmark runs</text>
+<text x="20" y="38" font-size="11" fill="#4b5563">Oracle per run: 12 database invariant checks, comparison with the Stripe simulator&#39;s own records, and client-response checks (docs/BENCHMARKS.md, The oracle).</text>
+<text x="20" y="83" font-size="11" fill="#6b7280">runs that passed every oracle check</text>
+<text x="600" y="73" font-size="11" fill="#6b7280" text-anchor="middle">ledger invariant</text>
+<text x="600" y="86" font-size="11" fill="#6b7280" text-anchor="middle">violations</text>
+<text x="720" y="73" font-size="11" fill="#6b7280" text-anchor="middle">duplicate</text>
+<text x="720" y="86" font-size="11" fill="#6b7280" text-anchor="middle">charges</text>
+<text x="840" y="73" font-size="11" fill="#6b7280" text-anchor="middle">deadlocks</text>
+<text x="840" y="86" font-size="11" fill="#6b7280" text-anchor="middle">(PostgreSQL)</text>
+<text x="20" y="105.0" font-weight="600" fill="#111827">Protected suite: faults injected (3 arms)</text>
+<rect x="20" y="113.0" width="330.0" height="14" fill="#059669"><title>108 of 108 runs passed</title></rect><rect x="350.0" y="113.0" width="0.0" height="14" fill="#dc2626"><title>0 of 108 runs failed</title></rect>
+<text x="360" y="125.0" fill="#374151">108 of 108 runs passed</text>
+<text x="600" y="125.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="720" y="125.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="840" y="125.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="20" y="145.0" font-size="11" fill="#6b7280">Processor errors, lost responses, cached 500s, DB resets and blackouts, API SIGKILLs, chaos.</text>
+<line x1="20" x2="940" y1="153.0" y2="153.0" stroke="#e5e7eb"/>
+<text x="20" y="169.0" font-weight="600" fill="#111827">Hot-merchant contention matrix (3 arms)</text>
+<rect x="20" y="177.0" width="330.0" height="14" fill="#059669"><title>360 of 360 runs passed</title></rect><rect x="350.0" y="177.0" width="0.0" height="14" fill="#dc2626"><title>0 of 360 runs failed</title></rect>
+<text x="360" y="189.0" fill="#374151">360 of 360 runs passed</text>
+<text x="600" y="189.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="720" y="189.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="840" y="189.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="20" y="209.0" font-size="11" fill="#6b7280">24 scenarios: hot merchant, concurrency 8-128, 1,000 and 10,000 operations, open-loop rates.</text>
+<line x1="20" x2="940" y1="217.0" y2="217.0" stroke="#e5e7eb"/>
+<text x="20" y="233.0" font-weight="600" fill="#111827">Workload shapes: steady, bursty, duplicates (3 arms)</text>
+<rect x="20" y="241.0" width="330.0" height="14" fill="#059669"><title>90 of 90 runs passed</title></rect><rect x="350.0" y="241.0" width="0.0" height="14" fill="#dc2626"><title>0 of 90 runs failed</title></rect>
+<text x="360" y="253.0" fill="#374151">90 of 90 runs passed</text>
+<text x="600" y="253.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="720" y="253.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="840" y="253.0" text-anchor="middle" font-size="14" font-weight="600" fill="#b91c1c">10,808</text>
+<text x="20" y="273.0" font-size="11" fill="#6b7280">Deadlocks here come from the duplicate runs before the lock-order fix; PostgreSQL aborted and the code retried.</text>
+<line x1="20" x2="940" y1="281.0" y2="281.0" stroke="#e5e7eb"/>
+<text x="20" y="297.0" font-weight="600" fill="#111827">Lock-order fix checks (before/after)</text>
+<rect x="20" y="305.0" width="330.0" height="14" fill="#059669"><title>115 of 115 runs passed</title></rect><rect x="350.0" y="305.0" width="0.0" height="14" fill="#dc2626"><title>0 of 115 runs failed</title></rect>
+<text x="360" y="317.0" fill="#374151">115 of 115 runs passed</text>
+<text x="600" y="317.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="720" y="317.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="840" y="317.0" text-anchor="middle" font-size="14" font-weight="600" fill="#b91c1c">7,064</text>
+<text x="20" y="337.0" font-size="11" fill="#6b7280">All deadlocks are in the before-fix and single-row arms; after the fix: 0.</text>
+<line x1="20" x2="940" y1="345.0" y2="345.0" stroke="#e5e7eb"/>
+<text x="20" y="361.0" font-weight="600" fill="#111827">Ablation: idempotency and recovery switched off</text>
+<rect x="20" y="369.0" width="0.0" height="14" fill="#059669"><title>0 of 6 runs passed</title></rect><rect x="20.0" y="369.0" width="330.0" height="14" fill="#dc2626"><title>6 of 6 runs failed</title></rect>
+<text x="360" y="381.0" fill="#374151">0 of 6 runs passed (failure expected)</text>
+<text x="600" y="381.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="720" y="381.0" text-anchor="middle" font-size="14" font-weight="600" fill="#b91c1c">4,902</text>
+<text x="840" y="381.0" text-anchor="middle" font-size="14" font-weight="600" fill="#111827">0</text>
+<text x="20" y="401.0" font-size="11" fill="#6b7280">The same requests and injected faults as scenario 04, which passed in every run. This shows the oracle detects the failures it checks for.</text>
+<line x1="20" x2="940" y1="409.0" y2="409.0" stroke="#e5e7eb"/>
+<text x="20" y="437" font-size="11" fill="#6b7280">Counts are totals over the runs listed; they describe those runs only.</text>
+</svg>

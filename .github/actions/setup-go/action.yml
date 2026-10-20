@@ -1,0 +1,19 @@
+name: Set up Go
+description: >-
+  Installs the newest patch release of the Go minor version declared in go.mod.
+  go.mod says "go 1.26.0", the minimum language version; installing exactly
+  1.26.0 would build with a standard library that has since had security
+  fixes and make govulncheck fail on the toolchain rather than on this code.
+runs:
+  using: composite
+  steps:
+    - id: version
+      shell: bash
+      run: |
+        minor="$(awk '/^go [0-9]/ { split($2, v, "."); print v[1] "." v[2]; exit }' go.mod)"
+        [ -n "$minor" ] || { echo "no go directive in go.mod" >&2; exit 1; }
+        echo "minor=$minor" >> "$GITHUB_OUTPUT"
+    - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+      with:
+        go-version: ${{ steps.version.outputs.minor }}
+        check-latest: true

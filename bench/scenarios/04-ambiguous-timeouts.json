@@ -1,0 +1,35 @@
+{
+  "name": "04-ambiguous-timeouts",
+  "description": "The processor charges the card but the response is lost: 3% of attempts hang 2.5 s then reset (the API's 2 s processor timeout fires), 1% get a 502 after the charge. Webhooks off, so only idempotent retries and the recovery worker can resolve them.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim",
+    "faults": {
+      "drop_after_prob": 0.03,
+      "hang_ms": 2500,
+      "error_after_prob": 0.01
+    }
+  },
+  "drain_timeout_s": 120
+}

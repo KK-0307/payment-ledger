@@ -1,0 +1,31 @@
+{
+  "name": "aml-credit-card-duplicates",
+  "description": "IBM AML HI-Small, Credit Card rows in US Dollar, merchants from the receiving account. Closed loop, 32 workers; 20% of operations sent twice at once.",
+  "seed": 20240601,
+  "dataset": "data/aml-hi-small.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 0,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32,
+    "duplicate_fraction": 0.2
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim"
+  },
+  "drain_timeout_s": 120
+}

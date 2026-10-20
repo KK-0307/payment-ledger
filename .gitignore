@@ -1,0 +1,7 @@
+# local PostgreSQL cluster, binaries, downloaded datasets, benchmark logs
+/.devdb/
+/bin/
+/data/
+*.test
+.env
+.DS_Store

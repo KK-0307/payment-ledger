@@ -1,0 +1,35 @@
+{
+  "name": "03-processor-errors",
+  "description": "Processor link fails before the request reaches the processor: 3% HTTP 500, 2% HTTP 429, 1% TCP reset. No side effects, so retries are always safe.",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 0,
+  "rows": 20000,
+  "merchants": 200,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_radarBlock",
+  "refund_fraction": 0.02,
+  "load": {
+    "mode": "closed",
+    "concurrency": 32
+  },
+  "client": {
+    "timeout_ms": 5000,
+    "max_attempts": 12,
+    "backoff_base_ms": 50,
+    "backoff_max_ms": 2000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on"
+  },
+  "processor": {
+    "kind": "sim",
+    "faults": {
+      "error_before_prob": 0.03,
+      "rate_limit_prob": 0.02,
+      "reset_before_prob": 0.01
+    }
+  },
+  "drain_timeout_s": 120
+}

@@ -1,0 +1,62 @@
+name: Stripe test mode (optional)
+
+# Runs benchmark scenario 10 against the real Stripe API in TEST MODE. It is
+# manual only, needs the repository secret STRIPE_TEST_SECRET_KEY (an
+# sk_test_… / rk_test_… key; the code refuses sk_live_ keys), and is never
+# part of ordinary CI. It creates test-mode PaymentIntents in the Stripe
+# account the key belongs to.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scenario-10:
+    name: Scenario 10 against Stripe test mode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    environment: stripe-test # optional: add required reviewers to this environment
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      STRIPE_SECRET_KEY: ${{ secrets.STRIPE_TEST_SECRET_KEY }}
+    steps:
+      - name: Require the secret
+        run: |
+          if [ -z "$STRIPE_SECRET_KEY" ]; then
+            echo "STRIPE_TEST_SECRET_KEY is not configured; nothing to run." >&2
+            exit 1
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-go
+      - name: Download and verify the ULB dataset
+        run: go run ./cmd/dataset fetch-ulb -dir data
+      - name: Build
+        run: |
+          go build -o bin/api ./cmd/api
+          go build -o bin/bench ./cmd/bench
+      - name: Scenario 10
+        run: |
+          ./bin/bench run -scenario bench/scenarios/10-stripe-test-mode.json -repeat 1 \
+            -admin-db "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable" -out bench/stripe-result
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        if: always()
+        with:
+          name: scenario-10-result
+          path: bench/stripe-result
+          if-no-files-found: ignore

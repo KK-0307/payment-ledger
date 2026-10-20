@@ -1,0 +1,39 @@
+{
+  "name": "11-stripe-test-mode-declines",
+  "description": "Real Stripe test mode, like 10, but on the densest 300-row window of the dataset for fraud labels (offset 148620: 21 fraud rows). Fraud-labelled rows pay with pm_card_chargeDeclined, so real Stripe declines (402 card_error) are exercised alongside the 5% lost-after-charge responses. Requires STRIPE_SECRET_KEY=sk_test_...",
+  "seed": 20240601,
+  "dataset": "data/ulb-creditcard.csv",
+  "offset": 148620,
+  "rows": 300,
+  "merchants": 10,
+  "merchant_zipf_s": 1.1,
+  "fraud_payment_method": "pm_card_chargeDeclined",
+  "refund_fraction": 0.05,
+  "load": {
+    "mode": "open",
+    "concurrency": 32,
+    "target_rate": 5
+  },
+  "client": {
+    "timeout_ms": 30000,
+    "max_attempts": 12,
+    "backoff_base_ms": 200,
+    "backoff_max_ms": 5000
+  },
+  "server": {
+    "instances": 1,
+    "idempotency_mode": "on",
+    "env": {
+      "PROCESSOR_TIMEOUT": "8s",
+      "LEASE": "30s",
+      "REQUEST_BUDGET": "25s"
+    }
+  },
+  "processor": {
+    "kind": "stripe",
+    "faults": {
+      "drop_after_prob": 0.05
+    }
+  },
+  "drain_timeout_s": 300
+}

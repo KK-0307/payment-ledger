@@ -1,0 +1,478 @@
+{
+  "run_id": "20261019T221814Z-e058ee",
+  "scenario": {
+    "name": "08-api-crashes",
+    "description": "Two API instances; every 4 s one is SIGKILLed (rotating) and restarted 1 s later. 40 ms median processor latency keeps requests in flight at kill time. Clients rotate instances on retry.",
+    "seed": 20240601,
+    "dataset": "data/ulb-creditcard.csv",
+    "offset": 0,
+    "rows": 20000,
+    "merchants": 200,
+    "merchant_zipf_s": 1.1,
+    "fraud_payment_method": "pm_card_radarBlock",
+    "refund_fraction": 0.02,
+    "load": {
+      "mode": "closed",
+      "concurrency": 32,
+      "target_rate": 0
+    },
+    "client": {
+      "timeout_ms": 5000,
+      "max_attempts": 12,
+      "backoff_base_ms": 50,
+      "backoff_max_ms": 2000
+    },
+    "server": {
+      "instances": 2,
+      "idempotency_mode": "on",
+      "env": null
+    },
+    "processor": {
+      "kind": "sim",
+      "webhooks": false,
+      "webhook_delay_ms": 0,
+      "webhook_drop_prob": 0,
+      "internal_error_prob": 0,
+      "faults": {
+        "latency_median_ms": 40,
+        "latency_sigma": 0.3,
+        "rate_limit_prob": 0,
+        "error_before_prob": 0,
+        "reset_before_prob": 0,
+        "drop_after_prob": 0,
+        "error_after_prob": 0,
+        "hang_ms": 0
+      }
+    },
+    "db": {
+      "faults": {
+        "latency_ms": 0,
+        "reset_rate_per_sec": 0
+      }
+    },
+    "outbox_sink": {
+      "error_prob": 0
+    },
+    "events": [
+      {
+        "at_s": 3,
+        "every_s": 4,
+        "type": "api_crash",
+        "duration_s": 1,
+        "instance": -1
+      }
+    ],
+    "drain_timeout_s": 120
+  },
+  "scenario_sha256": "64a965079e6e36827287d3bb20821eeb968ed969ddff09358f502a333c79f576",
+  "started_at": "2026-10-19T22:18:14.199113Z",
+  "finished_at": "2026-10-19T22:18:53.041538Z",
+  "environment": {
+    "go_version": "go1.27.2",
+    "os": "darwin",
+    "arch": "arm64",
+    "num_cpu": 14,
+    "cpu_model": "Apple M4 Max",
+    "memory_bytes": "38654705664",
+    "postgres": "PostgreSQL 16.15 (Homebrew) on aarch64-apple-darwin25.6.0, compiled by Apple clang version 21.0.0 (clang-2100.3.34.2), 64-bit",
+    "pg_settings": {
+      "fsync": "on",
+      "full_page_writes": "on",
+      "max_connections": "400",
+      "shared_buffers": "512MB",
+      "synchronous_commit": "on",
+      "wal_sync_method": "open_datasync"
+    },
+    "git_commit": "5433eaada5ed028752f823fae3f8e1b6a4f10b61",
+    "git_dirty": false,
+    "api_bin_sha256": "8c475b2dd883b37782d6943ed4b16251a403e238af91ad945b70ed604ce0e7d0",
+    "captured_at": "2026-10-19T22:18:14.300065Z"
+  },
+  "dataset": {
+    "file": "data/ulb-creditcard.csv",
+    "sha256": "f1a206818695c4a107be5ca51baf603e8192c17476600df75a48c0cb8b187411",
+    "offset": 0,
+    "rows": 20000,
+    "amount_total_minor": 144124310,
+    "span_seconds": 31006,
+    "label_1_rows": 84
+  },
+  "load": {
+    "duration_s": 38.336078583,
+    "ops": 20000,
+    "throughput_ops_per_s": 521.7017686537436,
+    "attempts": 21437,
+    "retries": 1437,
+    "attempt_histogram": {
+      "1": 18563,
+      "2": 1437
+    },
+    "attempt_statuses": {
+      "201": 20000,
+      "transport_error": 1437
+    },
+    "final_error_rate": 0,
+    "attempt_error_rate": 0.06703363343751458
+  },
+  "database": {
+    "sample_interval_ms": 25,
+    "samples": 1533,
+    "active_backend_samples": 347,
+    "wait_events": {
+      "CPU/none": 125,
+      "Client/ClientRead": 113,
+      "IO/DataFileExtend": 2,
+      "IO/WALWrite": 73,
+      "LWLock/WALWrite": 26,
+      "Lock/transactionid": 3,
+      "Timeout/VacuumDelay": 5
+    },
+    "row_lock_wait_share": 0.009,
+    "deadlocks": 0,
+    "tx_committed": 51906,
+    "tx_rolled_back": 6
+  },
+  "outcomes": {
+    "failed": 84,
+    "succeeded": 19916
+  },
+  "latency_ms": {
+    "succeeded": {
+      "n": 19916,
+      "mean": 59.999,
+      "p50": 43.111,
+      "p90": 65.713,
+      "p95": 76.188,
+      "p99": 104.983,
+      "p99_9": 2178.589,
+      "max": 2202.05
+    },
+    "all_final": {
+      "n": 20000,
+      "mean": 60.033,
+      "p50": 43.101,
+      "p90": 65.696,
+      "p95": 76.188,
+      "p99": 105.131,
+      "p99_9": 2178.589,
+      "max": 2202.05
+    },
+    "per_attempt": {
+      "n": 21437,
+      "mean": 54.369,
+      "p50": 41.218,
+      "p90": 61.038,
+      "p95": 68.162,
+      "p99": 91.754,
+      "p99_9": 2122.928,
+      "max": 2130.277
+    }
+  },
+  "refunds": {
+    "requested": 393,
+    "outcomes": {
+      "succeeded": 393
+    },
+    "latency_ms": {
+      "n": 393,
+      "mean": 61.11,
+      "p50": 43.875,
+      "p90": 62.33,
+      "p95": 77.101,
+      "p99": 96.735,
+      "p99_9": 2090.284,
+      "max": 2099.87
+    }
+  },
+  "drain": {
+    "duration_s": 0.103513042,
+    "timed_out": false,
+    "remaining": {
+      "outbox_undelivered": 0,
+      "payments_processing": 0,
+      "refunds_processing": 0
+    }
+  },
+  "faults": {
+    "processor_link": {
+      "requests": 20534,
+      "rate_limited": 0,
+      "error_before": 0,
+      "reset_before": 0,
+      "drop_after": 0,
+      "error_after": 0,
+      "forwarded": 20402
+    },
+    "database_link": {
+      "accepted": 92,
+      "refused_during_blackout": 0,
+      "resets": 0,
+      "blackouts": 0
+    },
+    "simulator": {
+      "requests": 20402,
+      "idempotent_replays": 9,
+      "idempotency_errors": 0,
+      "internal_errors": 0,
+      "webhooks_sent": 0,
+      "webhooks_dropped": 0,
+      "webhooks_failed": 0
+    },
+    "api_crashes": 9,
+    "events": [
+      "t=3.0s SIGKILL api instance 0 (pid 79143); restart in 1s",
+      "t=7.0s SIGKILL api instance 1 (pid 79144); restart in 1s",
+      "t=11.0s SIGKILL api instance 0 (pid 79178); restart in 1s",
+      "t=15.0s SIGKILL api instance 1 (pid 79185); restart in 1s",
+      "t=19.0s SIGKILL api instance 0 (pid 79192); restart in 1s",
+      "t=23.0s SIGKILL api instance 1 (pid 79201); restart in 1s",
+      "t=27.0s SIGKILL api instance 0 (pid 79210); restart in 1s",
+      "t=31.0s SIGKILL api instance 1 (pid 79219); restart in 1s",
+      "t=35.0s SIGKILL api instance 0 (pid 79228); restart in 1s"
+    ],
+    "outbox_sink": {
+      "unique_events": 20393,
+      "deliveries": 20393,
+      "duplicate_deliveries": 0,
+      "injected_errors": 0,
+      "bad_signatures": 0
+    }
+  },
+  "resolved_by": {
+    "payment:failed:recovery": 1,
+    "payment:failed:request": 83,
+    "payment:succeeded:recovery": 131,
+    "payment:succeeded:request": 19785,
+    "refund:succeeded:recovery": 2,
+    "refund:succeeded:request": 391
+  },
+  "audit": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "journal_entries_balanced",
+        "passed": true,
+        "violations": 0,
+        "detail": "every journal entry's postings sum to zero and it has \u003e= 2 postings"
+      },
+      {
+        "name": "account_balances_match_postings",
+        "passed": true,
+        "violations": 0,
+        "detail": "cached account balance equals the sum of its postings (every shard row)"
+      },
+      {
+        "name": "logical_balances_match_postings",
+        "passed": true,
+        "violations": 0,
+        "detail": "a sharded account's balance (sum of its shards) equals the sum of postings to all its shards"
+      },
+      {
+        "name": "account_shards_consistent",
+        "passed": true,
+        "violations": 0,
+        "detail": "all shards of one logical account share type, currency and merchant, and shard suffixes are numeric"
+      },
+      {
+        "name": "ledger_sums_to_zero_per_currency",
+        "passed": true,
+        "violations": 0,
+        "detail": "sum of all balances is zero in every currency"
+      },
+      {
+        "name": "posting_currency_matches_account",
+        "passed": true,
+        "violations": 0,
+        "detail": "postings only touch accounts in the journal's currency"
+      },
+      {
+        "name": "succeeded_payments_have_one_capture",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded payment has exactly one capture entry debiting clearing by its amount"
+      },
+      {
+        "name": "no_capture_without_success",
+        "passed": true,
+        "violations": 0,
+        "detail": "no capture entry exists for a payment that is not succeeded"
+      },
+      {
+        "name": "succeeded_refunds_have_one_entry",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded refund has exactly one refund entry; others have none"
+      },
+      {
+        "name": "refund_reservations_consistent",
+        "passed": true,
+        "violations": 0,
+        "detail": "payments.amount_refunded equals succeeded + in-flight refunds"
+      },
+      {
+        "name": "fees_within_amount",
+        "passed": true,
+        "violations": 0,
+        "detail": "fee is set exactly for succeeded payments and 0 \u003c= fee \u003c= amount"
+      },
+      {
+        "name": "terminal_events_recorded",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded/failed payment has its outbox event"
+      }
+    ],
+    "counts": {
+      "captured_amount": 143315937,
+      "fee_amount": 4753831,
+      "journal_entries": 20309,
+      "outbox_events": 20393,
+      "outbox_undelivered": 0,
+      "payments_failed": 84,
+      "payments_needs_review": 0,
+      "payments_processing": 0,
+      "payments_succeeded": 19916,
+      "payments_total": 20000,
+      "postings": 60534,
+      "processor_events": 0,
+      "refunded_amount": 3028429,
+      "refunds_needs_review": 0,
+      "refunds_processing": 0,
+      "refunds_succeeded": 393,
+      "refunds_total": 393
+    }
+  },
+  "oracle": {
+    "passed": true,
+    "checks": [
+      {
+        "name": "db.journal_entries_balanced",
+        "passed": true,
+        "violations": 0,
+        "detail": "every journal entry's postings sum to zero and it has \u003e= 2 postings"
+      },
+      {
+        "name": "db.account_balances_match_postings",
+        "passed": true,
+        "violations": 0,
+        "detail": "cached account balance equals the sum of its postings (every shard row)"
+      },
+      {
+        "name": "db.logical_balances_match_postings",
+        "passed": true,
+        "violations": 0,
+        "detail": "a sharded account's balance (sum of its shards) equals the sum of postings to all its shards"
+      },
+      {
+        "name": "db.account_shards_consistent",
+        "passed": true,
+        "violations": 0,
+        "detail": "all shards of one logical account share type, currency and merchant, and shard suffixes are numeric"
+      },
+      {
+        "name": "db.ledger_sums_to_zero_per_currency",
+        "passed": true,
+        "violations": 0,
+        "detail": "sum of all balances is zero in every currency"
+      },
+      {
+        "name": "db.posting_currency_matches_account",
+        "passed": true,
+        "violations": 0,
+        "detail": "postings only touch accounts in the journal's currency"
+      },
+      {
+        "name": "db.succeeded_payments_have_one_capture",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded payment has exactly one capture entry debiting clearing by its amount"
+      },
+      {
+        "name": "db.no_capture_without_success",
+        "passed": true,
+        "violations": 0,
+        "detail": "no capture entry exists for a payment that is not succeeded"
+      },
+      {
+        "name": "db.succeeded_refunds_have_one_entry",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded refund has exactly one refund entry; others have none"
+      },
+      {
+        "name": "db.refund_reservations_consistent",
+        "passed": true,
+        "violations": 0,
+        "detail": "payments.amount_refunded equals succeeded + in-flight refunds"
+      },
+      {
+        "name": "db.fees_within_amount",
+        "passed": true,
+        "violations": 0,
+        "detail": "fee is set exactly for succeeded payments and 0 \u003c= fee \u003c= amount"
+      },
+      {
+        "name": "db.terminal_events_recorded",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded/failed payment has its outbox event"
+      },
+      {
+        "name": "processor.no_duplicate_charges",
+        "passed": true,
+        "violations": 0,
+        "detail": "at most one succeeded charge per client request (client_ref)"
+      },
+      {
+        "name": "processor.charges_recorded_in_ledger",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded processor charge maps to a succeeded payment with the same id and amount"
+      },
+      {
+        "name": "processor.ledger_captures_exist_at_processor",
+        "passed": true,
+        "violations": 0,
+        "detail": "each succeeded payment has a succeeded processor charge"
+      },
+      {
+        "name": "processor.refunds_match",
+        "passed": true,
+        "violations": 0,
+        "detail": "succeeded refunds agree between ledger and processor"
+      },
+      {
+        "name": "processor.clearing_matches_processor_net",
+        "passed": true,
+        "violations": 0,
+        "detail": "processor_clearing balance == processor captured - refunded, per currency"
+      },
+      {
+        "name": "client.responses_match_final_state",
+        "passed": true,
+        "violations": 0,
+        "detail": "a succeeded/failed response to the client matches the final ledger and processor state"
+      },
+      {
+        "name": "client.duplicate_requests_agree",
+        "passed": true,
+        "violations": 0,
+        "detail": "two concurrent requests with one Idempotency-Key refer to the same payment"
+      },
+      {
+        "name": "recovery.no_unresolved_after_drain",
+        "passed": true,
+        "violations": 0,
+        "detail": "no payment or refund remains processing or needs_review after recovery"
+      },
+      {
+        "name": "outbox.all_events_delivered",
+        "passed": true,
+        "violations": 0,
+        "detail": "every outbox event was received at least once by the webhook sink"
+      }
+    ],
+    "duplicate_charge_amount_minor": 0,
+    "gave_up_final_db_status": {}
+  }
+}
